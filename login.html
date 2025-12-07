@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance System Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container {
+            width: 400px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #1e88e5;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: white;
+            color: #1e88e5;
+            border-bottom: 3px solid #1e88e5;
+        }
+
+        .form-container {
+            padding: 30px;
+        }
+
+        .form {
+            display: none;
+        }
+
+        .form.active {
+            display: block;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: #1e88e5;
+            outline: none;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: #1e88e5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .login-btn:hover {
+            background: #1565c0;
+        }
+
+        .error-message {
+            color: #e53935;
+            text-align: center;
+            margin: 15px 0;
+            min-height: 20px;
+            font-size: 14px;
+        }
+
+        .demo-credentials {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 13px;
+        }
+
+        .demo-credentials h4 {
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 13px;
+            border-left: 4px solid #1e88e5;
+        }
+
+        .reset-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .reset-link a {
+            color: #666;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .reset-link a:hover {
+            text-decoration: underline;
+            color: #1e88e5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="header">
+            <h1>Online Attendance System</h1>
+            <p>Login to your account</p>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('teacher')">Teacher</div>
+            <div class="tab" onclick="switchTab('student')">Student</div>
+        </div>
+
+        <div class="form-container">
+            <!-- Teacher Login Form -->
+            <div id="teacherForm" class="form active">
+                <div class="input-group">
+                    <label for="teacherUsername">Username</label>
+                    <input type="text" id="teacherUsername" placeholder="Enter username" value="admin">
+                </div>
+
+                <div class="input-group">
+                    <label for="teacherPassword">Password</label>
+                    <input type="password" id="teacherPassword" placeholder="Enter password" value="1234">
+                </div>
+
+                <div class="demo-credentials">
+                    <h4>Demo Credentials:</h4>
+                    <p><strong>Username:</strong> admin</p>
+                    <p><strong>Password:</strong> 1234</p>
+                </div>
+            </div>
+
+            <!-- Student Login Form -->
+            <div id="studentForm" class="form">
+                <div class="input-group">
+                    <label for="studentName">First Name</label>
+                    <input type="text" id="studentName" placeholder="Enter your first name">
+                </div>
+
+                <div class="input-group">
+                    <label for="studentId">Student ID</label>
+                    <input type="password" id="studentId" placeholder="Enter your student ID">
+                </div>
+
+                <div class="info-box">
+                    <p><strong>Note:</strong> Use the first name and student ID provided by your teacher.</p>
+                    <p style="margin-top: 8px;">If you don't have credentials, contact your teacher.</p>
+                </div>
+            </div>
+
+            <div id="errorMessage" class="error-message"></div>
+
+            <button class="login-btn" onclick="login()">LOGIN AS TEACHER</button>
+
+            <div class="reset-link">
+                <a onclick="resetData()">Clear all data & start fresh</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize localStorage if empty
+        if (!localStorage.getItem('sections')) {
+            localStorage.setItem('sections', JSON.stringify({
+                'Class A': { students: [] },
+                'Class B': { students: [] }
+            }));
+        }
+
+        let currentTab = 'teacher';
+
+        function switchTab(tab) {
+            currentTab = tab;
+
+            // Update tabs
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.form').forEach(f => f.classList.remove('active'));
+
+            if (tab === 'teacher') {
+                document.querySelector('.tab:nth-child(1)').classList.add('active');
+                document.getElementById('teacherForm').classList.add('active');
+                document.querySelector('.login-btn').textContent = 'LOGIN AS TEACHER';
+            } else {
+                document.querySelector('.tab:nth-child(2)').classList.add('active');
+                document.getElementById('studentForm').classList.add('active');
+                document.querySelector('.login-btn').textContent = 'LOGIN AS STUDENT';
+            }
+
+            // Clear error message
+            document.getElementById('errorMessage').textContent = '';
+        }
+
+        function login() {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = '';
+
+            if (currentTab === 'teacher') {
+                const username = document.getElementById('teacherUsername').value.trim();
+                const password = document.getElementById('teacherPassword').value.trim();
+
+                if (!username || !password) {
+                    errorMessage.textContent = 'Please enter both username and password.';
+                    return;
+                }
+
+                if (username === 'admin' && password === '1234') {
+                    // Clear any student session
+                    localStorage.removeItem('studentSession');
+
+                    // Set teacher session
+                    localStorage.setItem('teacherSession', JSON.stringify({
+                        loggedIn: true,
+                        username: username,
+                        timestamp: new Date().getTime()
+                    }));
+
+                    window.location.href = 'dashboard.html';
+                } else {
+                    errorMessage.textContent = 'Invalid username or password. Try: admin / 1234';
+                }
+            } else {
+                const firstName = document.getElementById('studentName').value.trim();
+                const studentId = document.getElementById('studentId').value.trim();
+
+                if (!firstName || !studentId) {
+                    errorMessage.textContent = 'Please enter both first name and student ID.';
+                    return;
+                }
+
+                // Check if student exists
+                const sections = JSON.parse(localStorage.getItem('sections'));
+                let foundStudent = null;
+                let foundSection = null;
+
+                for (const sectionName in sections) {
+                    const students = sections[sectionName].students;
+                    const student = students.find(s =>
+                        s.firstName.toLowerCase() === firstName.toLowerCase() &&
+                        s.id === studentId
+                    );
+
+                    if (student) {
+                        foundStudent = student;
+                        foundSection = sectionName;
+                        break;
+                    }
+                }
+
+                if (foundStudent) {
+                    // Clear any teacher session
+                    localStorage.removeItem('teacherSession');
+
+                    // Set student session
+                    localStorage.setItem('studentSession', JSON.stringify({
+                        loggedIn: true,
+                        id: foundStudent.id,
+                        firstName: foundStudent.firstName,
+                        lastName: foundStudent.lastName || '',
+                        section: foundSection,
+                        timestamp: new Date().getTime()
+                    }));
+
+                    window.location.href = 'student-dashboard.html';
+                } else {
+                    errorMessage.textContent = 'Student not found. Check your credentials or contact your teacher.';
+                }
+            }
+        }
+
+        function resetData() {
+            if (confirm('This will clear ALL data (students, attendance, sections). Are you sure?')) {
+                localStorage.clear();
+
+                // Reinitialize with default sections
+                localStorage.setItem('sections', JSON.stringify({
+                    'Class A': { students: [] },
+                    'Class B': { students: [] }
+                }));
+
+                alert('All data has been cleared. The page will reload.');
+                location.reload();
+            }
+        }
+
+        // Check if already logged in
+        function checkExistingSession() {
+            try {
+                const teacherSession = JSON.parse(localStorage.getItem('teacherSession'));
+                const studentSession = JSON.parse(localStorage.getItem('studentSession'));
+
+                if (teacherSession && teacherSession.loggedIn) {
+                    window.location.href = 'dashboard.html';
+                    return;
+                }
+
+                if (studentSession && studentSession.loggedIn) {
+                    window.location.href = 'student-dashboard.html';
+                    return;
+                }
+            } catch (e) {
+                // If there's an error parsing, clear the bad data
+                localStorage.removeItem('teacherSession');
+                localStorage.removeItem('studentSession');
+            }
+        }
+
+        // Run on page load
+        checkExistingSession();
+
+        // Allow Enter key to login
+        document.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                login();
+            }
+        });
+    </script>
+</body>
+
+</html>

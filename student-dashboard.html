@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .student-container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Header */
+        .student-header {
+            background: #1e88e5;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .student-avatar {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: #1e88e5;
+            font-weight: bold;
+            border: 4px solid white;
+        }
+
+        .student-name {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .student-id {
+            opacity: 0.9;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .student-section {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        /* Content */
+        .student-content {
+            padding: 30px;
+        }
+
+        .attendance-box {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 2px solid #e9ecef;
+        }
+
+        .today-date {
+            text-align: center;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .attendance-status {
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .status-present {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 2px solid #38a169;
+        }
+
+        .status-absent {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 2px solid #e53e3e;
+        }
+
+        .status-pending {
+            background: #feebc8;
+            color: #744210;
+            border: 2px solid #d69e2e;
+        }
+
+        .attendance-btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+            background: #38a169;
+            color: white;
+        }
+
+        .attendance-btn:hover:not(:disabled) {
+            background: #2f855a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(56, 161, 105, 0.3);
+        }
+
+        .attendance-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        /* History */
+        .history-title {
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-date {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .history-status {
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .history-present {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .history-absent {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .no-history {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 15px;
+            background: #e53e3e;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        .logout-btn:hover {
+            background: #c53030;
+        }
+
+        .instructions {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #1e88e5;
+            text-align: center;
+            border-left: 4px solid #1e88e5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="student-container">
+        <!-- Header -->
+        <div class="student-header">
+            <div class="student-avatar" id="studentAvatar">S</div>
+            <div class="student-name" id="studentName">Student Name</div>
+            <div class="student-id" id="studentId">ID: Loading...</div>
+            <div class="student-section" id="studentSection">Section: Loading...</div>
+        </div>
+
+        <!-- Content -->
+        <div class="student-content">
+            <div class="attendance-box">
+                <div class="today-date" id="todayDate"></div>
+
+                <div class="attendance-status" id="attendanceStatus">
+                    Checking attendance status...
+                </div>
+
+                <button class="attendance-btn" id="markAttendanceBtn" onclick="markAttendance()">
+                    MARK ME PRESENT TODAY
+                </button>
+
+                <div class="instructions">
+                    <strong>Note:</strong> You can mark attendance only once per day.
+                    Your teacher will see your attendance in the reports.
+                </div>
+            </div>
+
+            <h3 class="history-title">Your Attendance History</h3>
+            <div class="history-list" id="historyList">
+                <div class="no-history">Loading your attendance history...</div>
+            </div>
+
+            <button class="logout-btn" onclick="logout()">LOGOUT</button>
+        </div>
+    </div>
+
+    <script>
+        // Check if student is logged in
+        function checkStudentLogin() {
+            try {
+                const studentSession = localStorage.getItem('studentSession');
+                if (!studentSession) {
+                    window.location.href = 'login.html';
+                    return null;
+                }
+
+                const session = JSON.parse(studentSession);
+                if (!session || !session.loggedIn) {
+                    window.location.href = 'login.html';
+                    return null;
+                }
+
+                return session;
+            } catch (error) {
+                console.error('Error checking login:', error);
+                window.location.href = 'login.html';
+                return null;
+            }
+        }
+
+        // Load student data
+        function loadStudentDashboard() {
+            const studentSession = checkStudentLogin();
+            if (!studentSession) return;
+
+            console.log('Student session:', studentSession);
+
+            // Display student info
+            document.getElementById('studentName').textContent =
+                `${studentSession.firstName} ${studentSession.lastName || ''}`.trim();
+            document.getElementById('studentId').textContent = `ID: ${studentSession.id}`;
+            document.getElementById('studentSection').textContent = `Section: ${studentSession.section}`;
+
+            // Set avatar with first letter
+            const firstLetter = studentSession.firstName.charAt(0).toUpperCase();
+            document.getElementById('studentAvatar').textContent = firstLetter;
+
+            // Set today's date
+            const today = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('todayDate').textContent = today.toLocaleDateString('en-US', options);
+
+            // Check today's attendance
+            checkTodaysAttendance(studentSession);
+
+            // Load attendance history
+            loadAttendanceHistory(studentSession);
+        }
+
+        function checkTodaysAttendance(studentSession) {
+            const today = new Date().toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            // Get attendance records
+            const attendanceRecords = JSON.parse(localStorage.getItem('attendanceRecords')) || {};
+            const sectionRecords = attendanceRecords[studentSession.section] || [];
+
+            console.log('Checking attendance for section:', studentSession.section);
+            console.log('Section records:', sectionRecords);
+
+            let todaysRecord = null;
+
+            // Find today's record
+            for (const record of sectionRecords) {
+                // Parse the date from record
+                const recordDate = new Date(record.timestamp).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                if (recordDate === today) {
+                    todaysRecord = record;
+                    break;
+                }
+            }
+
+            console.log("Today's record:", todaysRecord);
+
+            const statusDiv = document.getElementById('attendanceStatus');
+            const markBtn = document.getElementById('markAttendanceBtn');
+
+            if (todaysRecord) {
+                // Check if student is in today's record
+                const studentRecord = todaysRecord.attendance.find(a => a.id === studentSession.id);
+
+                if (studentRecord) {
+                    if (studentRecord.present) {
+                        statusDiv.textContent = '✅ You are marked PRESENT today';
+                        statusDiv.className = 'attendance-status status-present';
+                        markBtn.disabled = true;
+                        markBtn.textContent = 'ALREADY MARKED TODAY';
+                    } else {
+                        statusDiv.textContent = '❌ You are marked ABSENT today';
+                        statusDiv.className = 'attendance-status status-absent';
+                        markBtn.disabled = true;
+                        markBtn.textContent = 'MARKED ABSENT BY TEACHER';
+                    }
+                } else {
+                    // Student not in today's record yet
+                    statusDiv.textContent = '⏳ You can mark attendance now';
+                    statusDiv.className = 'attendance-status status-pending';
+                    markBtn.disabled = false;
+                    markBtn.textContent = 'MARK ME PRESENT';
+                }
+            } else {
+                // No attendance taken today
+                statusDiv.textContent = '📅 You can mark attendance now';
+                statusDiv.className = 'attendance-status status-pending';
+                markBtn.disabled = false;
+                markBtn.textContent = 'MARK ME PRESENT';
+            }
+        }
+
+        function markAttendance() {
+            const studentSession = JSON.parse(localStorage.getItem('studentSession'));
+            if (!studentSession) {
+                alert('Please login again.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const today = new Date();
+            const todayFormatted = today.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            // Get attendance records
+            let attendanceRecords = JSON.parse(localStorage.getItem('attendanceRecords')) || {};
+            if (!attendanceRecords[studentSession.section]) {
+                attendanceRecords[studentSession.section] = [];
+            }
+
+            const sectionRecords = attendanceRecords[studentSession.section];
+
+            // Find today's record
+            let todayRecord = null;
+            let todayIndex = -1;
+
+            for (let i = 0; i < sectionRecords.length; i++) {
+                const record = sectionRecords[i];
+                const recordDate = new Date(record.timestamp).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                if (recordDate === todayFormatted) {
+                    todayRecord = record;
+                    todayIndex = i;
+                    break;
+                }
+            }
+
+            const studentFullName = studentSession.lastName ?
+                `${studentSession.firstName} ${studentSession.lastName}` : studentSession.firstName;
+
+            if (!todayRecord) {
+                // Create new record for today
+                todayRecord = {
+                    date: todayFormatted,
+                    timestamp: today.toISOString(),
+                    section: studentSession.section,
+                    attendance: [{
+                        id: studentSession.id,
+                        name: studentFullName,
+                        present: true
+                    }]
+                };
+                sectionRecords.push(todayRecord);
+            } else {
+                // Check if student already in record
+                const studentIndex = todayRecord.attendance.findIndex(a => a.id === studentSession.id);
+
+                if (studentIndex === -1) {
+                    // Add student as present
+                    todayRecord.attendance.push({
+                        id: studentSession.id,
+                        name: studentFullName,
+                        present: true
+                    });
+                } else {
+                    // Update existing record
+                    todayRecord.attendance[studentIndex].present = true;
+                }
+
+                // Update the record in the array
+                sectionRecords[todayIndex] = todayRecord;
+            }
+
+            // Save back to localStorage
+            localStorage.setItem('attendanceRecords', JSON.stringify(attendanceRecords));
+
+            console.log('Attendance saved:', attendanceRecords);
+
+            // Update UI
+            checkTodaysAttendance(studentSession);
+            loadAttendanceHistory(studentSession);
+
+            alert('✅ Attendance marked as PRESENT for today!\n\nYour teacher can now see your attendance in the reports.');
+        }
+
+        function loadAttendanceHistory(studentSession) {
+            const historyList = document.getElementById('historyList');
+            const attendanceRecords = JSON.parse(localStorage.getItem('attendanceRecords')) || {};
+            const sectionRecords = attendanceRecords[studentSession.section] || [];
+
+            if (sectionRecords.length === 0) {
+                historyList.innerHTML = `
+                    <div class="no-history">
+                        <p>No attendance records yet.</p>
+                        <p>Your attendance history will appear here.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Sort by date (newest first)
+            const sortedRecords = [...sectionRecords].sort((a, b) =>
+                new Date(b.timestamp) - new Date(a.timestamp)
+            );
+
+            let historyHTML = '';
+            let count = 0;
+
+            sortedRecords.forEach(record => {
+                // Find student in this record
+                const studentRecord = record.attendance.find(a => a.id === studentSession.id);
+
+                if (studentRecord && count < 10) { // Show last 10 records
+                    const date = new Date(record.timestamp);
+                    const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+                    const shortDate = date.toLocaleDateString();
+
+                    historyHTML += `
+                        <div class="history-item">
+                            <div>
+                                <div class="history-date">${shortDate}</div>
+                                <div>${dayName}</div>
+                            </div>
+                            <div class="history-status ${studentRecord.present ? 'history-present' : 'history-absent'}">
+                                ${studentRecord.present ? 'PRESENT' : 'ABSENT'}
+                            </div>
+                        </div>
+                    `;
+                    count++;
+                }
+            });
+
+            if (historyHTML === '') {
+                historyHTML = `
+                    <div class="no-history">
+                        <p>No personal attendance records found.</p>
+                    </div>
+                `;
+            }
+
+            historyList.innerHTML = historyHTML;
+        }
+
+        function logout() {
+            localStorage.removeItem('studentSession');
+            window.location.href = 'login.html';
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', loadStudentDashboard);
+    </script>
+</body>
+
+</html>

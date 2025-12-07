@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+
+  <!-- Add Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f6fa;
+    }
+
+    nav {
+      background-color: #1e88e5;
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-around;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      padding: 5px 10px;
+    }
+
+    .dashboard-cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      flex: 1;
+      min-width: 200px;
+      text-align: center;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-number {
+      font-size: 2.5em;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    /* Analytics Section */
+    .analytics-container {
+      display: flex;
+      gap: 15px;
+      padding: 0 20px 20px 20px;
+    }
+
+    .chart-container {
+      flex: 2;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      min-height: 350px;
+    }
+
+    .stats-sidebar {
+      flex: 1;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      min-height: 350px;
+    }
+
+    .chart-container canvas {
+      width: 100% !important;
+      height: 300px !important;
+    }
+
+    /* Quick Stats */
+    .quick-stat {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .quick-stat:last-child {
+      border-bottom: none;
+    }
+
+    .stat-value {
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+
+    .stat-present {
+      color: #38a169;
+    }
+
+    .stat-absent {
+      color: #e53e3e;
+    }
+
+    .stat-neutral {
+      color: #1e88e5;
+    }
+
+    /* Recent Activity */
+    .activity-item {
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+    }
+
+    .activity-item:last-child {
+      border-bottom: none;
+    }
+
+    .activity-date {
+      color: #666;
+      font-size: 12px;
+    }
+  </style>
+
+  <script>
+    if (localStorage.getItem("loggedIn") !== "true") {
+      window.location.href = "login.html";
+    }
+  </script>
+</head>
+
+<body>
+
+  <nav>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="students.html">Students</a>
+    <a href="attendance.html">Attendance</a>
+    <a href="reports.html">Reports</a>
+    <a href="#" onclick="logout()">Logout</a>
+  </nav>
+
+  <div style="padding: 20px 0 0 0;">
+    <h2 style="text-align: center; margin-bottom: 20px;">Dashboard Overview</h2>
+
+    <!-- Statistics Cards -->
+    <div class="dashboard-cards">
+      <div class="card">
+        <p>Total Students</p>
+        <div class="stat-number" id="totalStudents">0</div>
+      </div>
+      <div class="card">
+        <p>Present Today</p>
+        <div class="stat-number" id="presentToday" style="color: green;">0</div>
+      </div>
+      <div class="card">
+        <p>Absent Today</p>
+        <div class="stat-number" id="absentToday" style="color: red;">0</div>
+      </div>
+      <div class="card">
+        <p>Total Sections</p>
+        <div class="stat-number" id="totalSections" style="color: #1e88e5;">0</div>
+      </div>
+    </div>
+
+    <!-- Analytics Section - Chart + Useful Stats -->
+    <div class="analytics-container">
+      <!-- Main Chart -->
+      <div class="chart-container">
+        <h3 style="margin: 0 0 20px 0; text-align: center;">Weekly Attendance Trend</h3>
+        <canvas id="attendanceChart"></canvas>
+      </div>
+
+      <!-- Useful Statistics Sidebar -->
+      <div class="stats-sidebar">
+        <h3 style="margin: 0 0 20px 0; text-align: center;">Quick Stats</h3>
+
+        <!-- Quick Statistics -->
+        <div style="margin-bottom: 25px;">
+          <div class="quick-stat">
+            <span>Total Records</span>
+            <span class="stat-value stat-neutral" id="totalRecords">0</span>
+          </div>
+          <div class="quick-stat">
+            <span>This Week Avg</span>
+            <span class="stat-value stat-neutral" id="weekAttendance">0%</span>
+          </div>
+          <div class="quick-stat">
+            <span>Best Day</span>
+            <span class="stat-value stat-present" id="bestDay">0%</span>
+          </div>
+          <div class="quick-stat">
+            <span>Last Activity</span>
+            <span class="stat-value stat-neutral" id="lastActivity">-</span>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <h4 style="margin: 0 0 15px 0;">Recent Activity</h4>
+        <div id="recentActivity">
+          <!-- Activity will be loaded here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function logout() {
+      localStorage.removeItem('loggedIn');
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('teacherUsername');
+      window.location.href = 'login.html';
+    }
+    function logout() {
+      localStorage.removeItem('loggedIn');
+      window.location.href = 'login.html';
+    }
+
+    // Update dashboard with REAL data from localStorage
+    function updateDashboard() {
+      const sections = JSON.parse(localStorage.getItem('sections')) || {};
+      const attendanceRecords = JSON.parse(localStorage.getItem('attendanceRecords')) || {};
+
+      // Calculate total students across all sections
+      let totalStudents = 0;
+      Object.keys(sections).forEach(section => {
+        totalStudents += sections[section].students.length;
+      });
+
+      document.getElementById('totalStudents').textContent = totalStudents;
+      document.getElementById('totalSections').textContent = Object.keys(sections).length;
+
+      // Calculate today's attendance
+      const today = new Date().toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        weekday: 'long'
+      });
+
+      let totalPresentToday = 0;
+      let totalAbsentToday = 0;
+
+      Object.keys(attendanceRecords).forEach(section => {
+        const todayRecord = attendanceRecords[section].find(record => record.date === today);
+        if (todayRecord) {
+          const presentCount = todayRecord.attendance.filter(a => a.present).length;
+          const absentCount = todayRecord.attendance.length - presentCount;
+          totalPresentToday += presentCount;
+          totalAbsentToday += absentCount;
+        }
+      });
+
+      document.getElementById('presentToday').textContent = totalPresentToday;
+      document.getElementById('absentToday').textContent = totalAbsentToday;
+
+      // Update quick stats
+      updateQuickStats(attendanceRecords, totalStudents);
+      updateRecentActivity(attendanceRecords);
+    }
+
+    // Update quick statistics with REAL data
+    function updateQuickStats(attendanceRecords, totalStudents) {
+      let totalRecords = 0;
+      let allRecords = [];
+
+      // Collect all records from all sections
+      Object.keys(attendanceRecords).forEach(section => {
+        totalRecords += attendanceRecords[section].length;
+        allRecords = allRecords.concat(attendanceRecords[section]);
+      });
+
+      document.getElementById('totalRecords').textContent = totalRecords;
+
+      if (allRecords.length === 0) {
+        document.getElementById('weekAttendance').textContent = '0%';
+        document.getElementById('bestDay').textContent = '0%';
+        document.getElementById('lastActivity').textContent = '-';
+        return;
+      }
+
+      // Calculate weekly average (last 7 days)
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+      const recentRecords = allRecords.filter(record =>
+        new Date(record.timestamp) >= oneWeekAgo
+      );
+
+      const weeklyAverage = recentRecords.length > 0 ?
+        recentRecords.reduce((sum, record) => {
+          const present = record.attendance.filter(a => a.present).length;
+          const total = record.attendance.length;
+          return total > 0 ? sum + (present / total) * 100 : sum;
+        }, 0) / recentRecords.length : 0;
+
+      // Find best day
+      const bestDay = allRecords.reduce((best, record) => {
+        const present = record.attendance.filter(a => a.present).length;
+        const total = record.attendance.length;
+        const rate = total > 0 ? (present / total) * 100 : 0;
+        return rate > best ? rate : best;
+      }, 0);
+
+      // Get last activity date
+      const lastRecord = allRecords.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+      const lastActivityDate = lastRecord ? new Date(lastRecord.timestamp).toLocaleDateString() : '-';
+
+      document.getElementById('weekAttendance').textContent = Math.min(weeklyAverage, 100).toFixed(1) + '%';
+      document.getElementById('bestDay').textContent = Math.min(bestDay, 100).toFixed(1) + '%';
+      document.getElementById('lastActivity').textContent = lastActivityDate;
+    }
+
+    // Update recent activity with REAL data
+    function updateRecentActivity(attendanceRecords) {
+      const activityContainer = document.getElementById('recentActivity');
+      let allRecords = [];
+
+      // Collect all records from all sections
+      Object.keys(attendanceRecords).forEach(section => {
+        allRecords = allRecords.concat(attendanceRecords[section].map(record => ({
+          ...record,
+          section: section
+        })));
+      });
+
+      // Get 5 most recent records
+      const recentRecords = allRecords
+        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+        .slice(0, 5);
+
+      if (recentRecords.length === 0) {
+        activityContainer.innerHTML = '<p style="color: #666; text-align: center;">No activity yet</p>';
+        return;
+      }
+
+      activityContainer.innerHTML = recentRecords.map(record => {
+        const present = record.attendance.filter(a => a.present).length;
+        const total = record.attendance.length;
+        const percentage = total > 0 ? ((present / total) * 100).toFixed(1) : 0;
+
+        return `
+          <div class="activity-item">
+            <div><strong>${record.section}</strong> - Attendance marked</div>
+            <div class="activity-date">${record.date}</div>
+            <div style="color: ${percentage >= 80 ? '#38a169' : percentage >= 60 ? '#d69e2e' : '#e53e3e'}">
+              ${present}/${total} students (${percentage}%)
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Initialize Chart with REAL data
+    function initChart() {
+      const ctx = document.getElementById('attendanceChart');
+      const attendanceRecords = JSON.parse(localStorage.getItem('attendanceRecords')) || {};
+
+      let allRecords = [];
+      Object.keys(attendanceRecords).forEach(section => {
+        allRecords = allRecords.concat(attendanceRecords[section]);
+      });
+
+      // Get last 7 days of data
+      const recentRecords = allRecords
+        .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
+        .slice(-7);
+
+      const labels = recentRecords.map(record => {
+        // Extract short date or day name
+        const date = new Date(record.timestamp);
+        return date.toLocaleDateString('en-US', { weekday: 'short' });
+      });
+
+      const data = recentRecords.map(record => {
+        const present = record.attendance.filter(a => a.present).length;
+        const total = record.attendance.length;
+        return total > 0 ? ((present / total) * 100).toFixed(0) : 0;
+      });
+
+      // If no records, show sample data
+      const finalLabels = labels.length > 0 ? labels : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      const finalData = data.length > 0 ? data : [85, 78, 92, 88, 76, 45, 90];
+
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: finalLabels,
+          datasets: [{
+            label: 'Attendance Rate %',
+            data: finalData,
+            backgroundColor: 'rgba(30, 136, 229, 0.1)',
+            borderColor: '#1e88e5',
+            borderWidth: 3,
+            tension: 0.4,
+            fill: true
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 100,
+              ticks: {
+                callback: function (value) {
+                  return value + '%';
+                }
+              }
+            }
+          },
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+    }
+
+    // Initialize everything when page loads
+    document.addEventListener('DOMContentLoaded', function () {
+      updateDashboard();
+      initChart();
+    });
+  </script>
+
+</body>
+
+</html>

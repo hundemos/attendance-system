@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Students</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f6fa;
+    }
+
+    /* Navigation */
+    nav {
+      background: #1e88e5;
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-brand {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      transition: background 0.3s;
+    }
+
+    .nav-links a:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-links a.active {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .logout-btn {
+      background: #e53935;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .logout-btn:hover {
+      background: #c62828;
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .page-title {
+      color: #333;
+      margin-bottom: 25px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+
+    /* Section Manager */
+    .section-manager {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      margin-bottom: 25px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .section-header h3 {
+      color: #333;
+    }
+
+    .section-controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .section-select {
+      padding: 10px 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+      min-width: 200px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: #1e88e5;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #1565c0;
+    }
+
+    .btn-danger {
+      background: #e53935;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #c62828;
+    }
+
+    .btn-success {
+      background: #38a169;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #2f855a;
+    }
+
+    .current-section {
+      background: #e3f2fd;
+      padding: 10px 15px;
+      border-radius: 5px;
+      margin-top: 15px;
+      color: #1e88e5;
+      font-weight: bold;
+      border-left: 4px solid #1e88e5;
+    }
+
+    /* Add Student Form */
+    .add-student-form {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      margin-bottom: 25px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    .form-title {
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .form-input {
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+      width: 100%;
+    }
+
+    .form-input:focus {
+      border-color: #1e88e5;
+      outline: none;
+    }
+
+    .form-notes {
+      background: #f7fafc;
+      padding: 15px;
+      border-radius: 5px;
+      font-size: 14px;
+      color: #666;
+      margin-top: 15px;
+      border-left: 4px solid #38a169;
+    }
+
+    /* Search Box */
+    .search-box {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    .search-container {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 300px;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    .search-stats {
+      display: flex;
+      gap: 20px;
+      margin-top: 15px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    /* Students Table */
+    .students-table-container {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+      overflow-x: auto;
+    }
+
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .sort-controls {
+      display: flex;
+      gap: 10px;
+    }
+
+    .sort-btn {
+      background: #f7fafc;
+      border: 1px solid #ddd;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      color: #666;
+    }
+
+    .sort-btn.active {
+      background: #1e88e5;
+      color: white;
+      border-color: #1e88e5;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: #f8f9fa;
+      color: #333;
+      font-weight: bold;
+      text-align: left;
+      padding: 15px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+
+    td {
+      padding: 15px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    tr:hover {
+      background: #f8f9fa;
+    }
+
+    .student-id-badge {
+      background: #e3f2fd;
+      color: #1e88e5;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: bold;
+      display: inline-block;
+    }
+
+    .actions-cell {
+      display: flex;
+      gap: 8px;
+    }
+
+    .action-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .edit-btn {
+      background: #38a169;
+      color: white;
+    }
+
+    .edit-btn:hover {
+      background: #2f855a;
+    }
+
+    .delete-btn {
+      background: #e53e3e;
+      color: white;
+    }
+
+    .delete-btn:hover {
+      background: #c53030;
+    }
+
+    .no-data {
+      text-align: center;
+      padding: 50px;
+      color: #666;
+    }
+
+    .no-data i {
+      font-size: 48px;
+      margin-bottom: 15px;
+      display: block;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-title {
+      color: #333;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 25px;
+    }
+
+    .export-options {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .export-btn {
+      background: #4caf50;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .export-btn:hover {
+      background: #388e3c;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .nav-links {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .section-controls {
+        flex-direction: column;
+      }
+
+      .section-select,
+      .form-input,
+      .search-input {
+        min-width: 100%;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .search-container {
+        flex-direction: column;
+      }
+
+      .table-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .sort-controls {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      table {
+        font-size: 14px;
+      }
+
+      th,
+      td {
+        padding: 10px 8px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navigation -->
+  <nav>
+    <div class="nav-brand">Student Management</div>
+    <div class="nav-links">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="students.html" class="active">Students</a>
+      <a href="attendance.html">Attendance</a>
+      <a href="reports.html">Reports</a>
+    </div>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container">
+    <h1 class="page-title">Student Management</h1>
+
+    <!-- Section Manager -->
+    <div class="section-manager">
+      <div class="section-header">
+        <h3>Section Management</h3>
+        <div class="section-controls">
+          <select class="section-select" id="sectionSelect" onchange="changeSection()">
+            <option value="">-- Select Section --</option>
+          </select>
+          <input type="text" class="form-input" id="newSectionName" placeholder="New section name"
+            style="min-width: 200px;">
+          <button class="btn btn-success" onclick="addNewSection()">Add Section</button>
+          <button class="btn btn-danger" onclick="deleteSection()" id="deleteSectionBtn" disabled>Delete
+            Section</button>
+        </div>
+      </div>
+      <div class="current-section" id="currentSectionDisplay">
+        No section selected
+      </div>
+    </div>
+
+    <!-- Add Student Form (Only shown when section selected) -->
+    <div class="add-student-form" id="addStudentForm" style="display: none;">
+      <h3 class="form-title">Add New Student to <span id="sectionNameDisplay"></span></h3>
+      <div class="form-grid">
+        <input type="text" class="form-input" id="studentId" placeholder="Student ID (e.g., S001)" maxlength="10">
+        <input type="text" class="form-input" id="studentFirstName" placeholder="First Name (Required)" maxlength="50">
+        <input type="text" class="form-input" id="studentLastName" placeholder="Last Name (Optional)" maxlength="50">
+        <button class="btn btn-primary" onclick="addStudent()" style="height: 46px;">Add Student</button>
+      </div>
+      <div class="form-notes">
+        <strong>Important:</strong> Students will login with <strong>First Name</strong> and <strong>Student
+          ID</strong>.
+        Make sure to provide these to students. ID must be unique within this section.
+      </div>
+    </div>
+
+    <!-- Search Box -->
+    <div class="search-box" id="searchBox" style="display: none;">
+      <div class="search-container">
+        <input type="text" class="search-input" id="searchInput"
+          placeholder="Search students by ID, First Name, or Last Name..." onkeyup="searchStudents()">
+        <button class="btn" onclick="clearSearch()">Clear Search</button>
+        <button class="btn btn-success" onclick="showExportOptions()">Export Data</button>
+      </div>
+      <div class="search-stats">
+        <div>Total Students: <span id="totalStudentsCount">0</span></div>
+        <div>Showing: <span id="showingStudentsCount">0</span></div>
+      </div>
+      <div class="export-options" id="exportOptions" style="display: none;">
+        <button class="export-btn" onclick="exportStudentsCSV()">Export as CSV</button>
+        <button class="export-btn" onclick="exportStudentsJSON()">Export as JSON</button>
+        <button class="export-btn" onclick="exportStudentsPDF()">Export as PDF</button>
+        <button class="btn" onclick="hideExportOptions()">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Students Table -->
+    <div class="students-table-container" id="studentsTableContainer" style="display: none;">
+      <div class="table-header">
+        <h3>Students in <span id="sectionNameDisplay2"></span></h3>
+        <div class="sort-controls">
+          <button class="sort-btn active" onclick="sortStudents('firstName')">Sort by Name</button>
+          <button class="sort-btn" onclick="sortStudents('id')">Sort by ID</button>
+          <button class="sort-btn" onclick="sortStudents('lastName')">Sort by Last Name</button>
+        </div>
+      </div>
+
+      <div id="studentsTableWrapper">
+        <!-- Table will be loaded here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal" id="deleteModal">
+    <div class="modal-content">
+      <h3 class="modal-title">Confirm Delete</h3>
+      <p id="deleteMessage">Are you sure you want to delete this student?</p>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Check if teacher is logged in
+    function checkAuth() {
+      try {
+        const teacherSession = JSON.parse(localStorage.getItem('teacherSession'));
+        if (!teacherSession || !teacherSession.loggedIn) {
+          window.location.href = 'login.html';
+          return false;
+        }
+        return true;
+      } catch (e) {
+        window.location.href = 'login.html';
+        return false;
+      }
+    }
+
+    let sections = {};
+    let currentSection = '';
+    let currentSort = 'firstName';
+    let deleteStudentId = '';
+    let allStudents = [];
+    let filteredStudents = [];
+
+    function loadPage() {
+      if (!checkAuth()) return;
+
+      // Load sections data
+      sections = JSON.parse(localStorage.getItem('sections')) || {
+        'Class A': { students: [] },
+        'Class B': { students: [] }
+      };
+
+      populateSectionSelect();
+
+      // Load last used section
+      const lastSection = localStorage.getItem('lastSection');
+      if (lastSection && sections[lastSection]) {
+        document.getElementById('sectionSelect').value = lastSection;
+        changeSection();
+      }
+    }
+
+    function populateSectionSelect() {
+      const select = document.getElementById('sectionSelect');
+      select.innerHTML = '<option value="">-- Select Section --</option>';
+
+      Object.keys(sections).sort().forEach(section => {
+        select.innerHTML += `<option value="${section}">${section}</option>`;
+      });
+    }
+
+    function changeSection() {
+      currentSection = document.getElementById('sectionSelect').value;
+
+      if (currentSection) {
+        localStorage.setItem('lastSection', currentSection);
+
+        // Update UI
+        document.getElementById('currentSectionDisplay').textContent = `Current Section: ${currentSection}`;
+        document.getElementById('sectionNameDisplay').textContent = currentSection;
+        document.getElementById('sectionNameDisplay2').textContent = currentSection;
+        document.getElementById('deleteSectionBtn').disabled = false;
+
+        // Show student management sections
+        document.getElementById('addStudentForm').style.display = 'block';
+        document.getElementById('searchBox').style.display = 'block';
+        document.getElementById('studentsTableContainer').style.display = 'block';
+
+        // Load students for this section
+        loadAndDisplayStudents();
+      } else {
+        // Hide student management sections
+        document.getElementById('currentSectionDisplay').textContent = 'No section selected';
+        document.getElementById('addStudentForm').style.display = 'none';
+        document.getElementById('searchBox').style.display = 'none';
+        document.getElementById('studentsTableContainer').style.display = 'none';
+        document.getElementById('deleteSectionBtn').disabled = true;
+      }
+    }
+
+    function addNewSection() {
+      const sectionName = document.getElementById('newSectionName').value.trim();
+
+      if (!sectionName) {
+        alert('Please enter a section name.');
+        return;
+      }
+
+      if (sections[sectionName]) {
+        alert('Section already exists. Please choose a different name.');
+        return;
+      }
+
+      sections[sectionName] = { students: [] };
+      localStorage.setItem('sections', JSON.stringify(sections));
+
+      document.getElementById('newSectionName').value = '';
+      populateSectionSelect();
+
+      // Select the new section
+      document.getElementById('sectionSelect').value = sectionName;
+      changeSection();
+
+      alert(`Section "${sectionName}" created successfully!`);
+    }
+
+    function deleteSection() {
+      if (!currentSection) return;
+
+      if (sections[currentSection].students.length > 0) {
+        if (!confirm(`Section "${currentSection}" has ${sections[currentSection].students.length} students. Are you sure you want to delete it? This will also delete all attendance records for this section.`)) {
+          return;
+        }
+      } else {
+        if (!confirm(`Delete section "${currentSection}"?`)) {
+          return;
+        }
+      }
+
+      delete sections[currentSection];
+      localStorage.setItem('sections', JSON.stringify(sections));
+
+      // Remove attendance records for this section
+      const attendanceRecords = JSON.parse(localStorage.getItem('attendanceRecords')) || {};
+      delete attendanceRecords[currentSection];
+      localStorage.setItem('attendanceRecords', JSON.stringify(attendanceRecords));
+
+      currentSection = '';
+      document.getElementById('sectionSelect').value = '';
+      changeSection();
+      populateSectionSelect();
+
+      alert('Section deleted successfully.');
+    }
+
+    function addStudent() {
+      if (!currentSection) {
+        alert('Please select a section first.');
+        return;
+      }
+
+      const studentId = document.getElementById('studentId').value.trim();
+      const firstName = document.getElementById('studentFirstName').value.trim();
+      const lastName = document.getElementById('studentLastName').value.trim();
+
+      if (!studentId || !firstName) {
+        alert('Please enter Student ID and First Name.');
+        return;
+      }
+
+      // Validate ID format (alphanumeric)
+      if (!/^[A-Za-z0-9]+$/.test(studentId)) {
+        alert('Student ID should contain only letters and numbers (no spaces or special characters).');
+        return;
+      }
+
+      // Check if ID already exists
+      const idExists = sections[currentSection].students.some(s => s.id === studentId);
+      if (idExists) {
+        alert(`Student ID "${studentId}" already exists in this section. Please use a different ID.`);
+        return;
+      }
+
+      // Add student
+      sections[currentSection].students.push({
+        id: studentId,
+        firstName: firstName,
+        lastName: lastName,
+        addedDate: new Date().toISOString()
+      });
+
+      // Sort alphabetically by first name
+      sections[currentSection].students.sort((a, b) => a.firstName.localeCompare(b.firstName));
+
+      localStorage.setItem('sections', JSON.stringify(sections));
+
+      // Clear form
+      document.getElementById('studentId').value = '';
+      document.getElementById('studentFirstName').value = '';
+      document.getElementById('studentLastName').value = '';
+
+      // Refresh display
+      loadAndDisplayStudents();
+
+      alert(`Student "${firstName}" added successfully!\n\nLogin details for student:\nFirst Name: ${firstName}\nStudent ID: ${studentId}`);
+    }
+
+    function loadAndDisplayStudents() {
+      if (!currentSection) return;
+
+      allStudents = sections[currentSection].students || [];
+      filteredStudents = [...allStudents];
+
+      updateStudentCounts();
+      renderStudentsTable();
+    }
+
+    function updateStudentCounts() {
+      document.getElementById('totalStudentsCount').textContent = allStudents.length;
+      document.getElementById('showingStudentsCount').textContent = filteredStudents.length;
+    }
+
+    function renderStudentsTable() {
+      const wrapper = document.getElementById('studentsTableWrapper');
+
+      if (filteredStudents.length === 0) {
+        wrapper.innerHTML = `
+                    <div class="no-data">
+                        <div>📝</div>
+                        <p>No students found.</p>
+                        <p style="margin-top: 10px;">Add students using the form above.</p>
+                    </div>
+                `;
+        return;
+      }
+
+      // Sort students
+      const sortedStudents = [...filteredStudents];
+      if (currentSort === 'firstName') {
+        sortedStudents.sort((a, b) => a.firstName.localeCompare(b.firstName));
+      } else if (currentSort === 'lastName') {
+        sortedStudents.sort((a, b) => (a.lastName || '').localeCompare(b.lastName || ''));
+      } else if (currentSort === 'id') {
+        sortedStudents.sort((a, b) => a.id.localeCompare(b.id));
+      }
+
+      let tableHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Student ID</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Full Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+      sortedStudents.forEach((student, index) => {
+        const fullName = student.lastName ? `${student.firstName} ${student.lastName}` : student.firstName;
+
+        tableHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td><span class="student-id-badge">${student.id}</span></td>
+                        <td><strong>${student.firstName}</strong></td>
+                        <td>${student.lastName || '-'}</td>
+                        <td>${fullName}</td>
+                        <td class="actions-cell">
+                            <button class="action-btn edit-btn" onclick="editStudent('${student.id}')">Edit</button>
+                            <button class="action-btn delete-btn" onclick="showDeleteModal('${student.id}', '${student.firstName}')">Delete</button>
+                        </td>
+                    </tr>
+                `;
+      });
+
+      tableHTML += `
+                    </tbody>
+                </table>
+            `;
+
+      wrapper.innerHTML = tableHTML;
+
+      // Update sort button states
+      document.querySelectorAll('.sort-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      const activeBtn = document.querySelector(`.sort-btn[onclick*="${currentSort}"]`);
+      if (activeBtn) {
+        activeBtn.classList.add('active');
+      }
+    }
+
+    function sortStudents(sortBy) {
+      currentSort = sortBy;
+      renderStudentsTable();
+    }
+
+    function searchStudents() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+
+      if (!searchTerm) {
+        filteredStudents = [...allStudents];
+      } else {
+        filteredStudents = allStudents.filter(student =>
+          student.id.toLowerCase().includes(searchTerm) ||
+          student.firstName.toLowerCase().includes(searchTerm) ||
+          (student.lastName && student.lastName.toLowerCase().includes(searchTerm))
+        );
+      }
+
+      updateStudentCounts();
+      renderStudentsTable();
+    }
+
+    function clearSearch() {
+      document.getElementById('searchInput').value = '';
+      searchStudents();
+    }
+
+    function editStudent(studentId) {
+      const student = allStudents.find(s => s.id === studentId);
+      if (!student) return;
+
+      const newFirstName = prompt('Edit First Name:', student.firstName);
+      if (!newFirstName || newFirstName.trim() === '') {
+        alert('First name cannot be empty.');
+        return;
+      }
+
+      const newLastName = prompt('Edit Last Name (optional):', student.lastName || '');
+      const newId = prompt('Edit Student ID:', student.id);
+
+      if (!newId || newId.trim() === '') {
+        alert('Student ID cannot be empty.');
+        return;
+      }
+
+      // Check if new ID already exists (excluding current student)
+      if (newId !== studentId) {
+        const idExists = sections[currentSection].students.some(s => s.id === newId && s.id !== studentId);
+        if (idExists) {
+          alert(`Student ID "${newId}" already exists. Please use a different ID.`);
+          return;
+        }
+      }
+
+      // Update student
+      student.firstName = newFirstName.trim();
+      student.lastName = newLastName.trim();
+      student.id = newId.trim();
+
+      // Re-sort
+      sections[currentSection].students.sort((a, b) => a.firstName.localeCompare(b.firstName));
+      localStorage.setItem('sections', JSON.stringify(sections));
+
+      loadAndDisplayStudents();
+      alert('Student updated successfully!');
+    }
+
+    function showDeleteModal(studentId, studentName) {
+      deleteStudentId = studentId;
+      document.getElementById('deleteMessage').textContent =
+        `Are you sure you want to delete student "${studentName}" (ID: ${studentId})?`;
+      document.getElementById('deleteModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('deleteModal').style.display = 'none';
+      deleteStudentId = '';
+    }
+
+    function confirmDelete() {
+      if (!deleteStudentId) return;
+
+      const studentIndex = sections[currentSection].students.findIndex(s => s.id === deleteStudentId);
+      if (studentIndex !== -1) {
+        sections[currentSection].students.splice(studentIndex, 1);
+        localStorage.setItem('sections', JSON.stringify(sections));
+
+        // Also remove from attendance records
+        const attendanceRecords = JSON.parse(localStorage.getItem('attendanceRecords')) || {};
+        if (attendanceRecords[currentSection]) {
+          attendanceRecords[currentSection].forEach(record => {
+            record.attendance = record.attendance.filter(a => a.id !== deleteStudentId);
+          });
+          localStorage.setItem('attendanceRecords', JSON.stringify(attendanceRecords));
+        }
+
+        loadAndDisplayStudents();
+        alert('Student deleted successfully.');
+      }
+
+      closeModal();
+    }
+
+    function showExportOptions() {
+      document.getElementById('exportOptions').style.display = 'flex';
+    }
+
+    function hideExportOptions() {
+      document.getElementById('exportOptions').style.display = 'none';
+    }
+
+    function exportStudentsCSV() {
+      if (filteredStudents.length === 0) {
+        alert('No students to export.');
+        return;
+      }
+
+      let csvContent = "data:text/csv;charset=utf-8,";
+      csvContent += "Student ID,First Name,Last Name,Full Name,Section\n";
+
+      filteredStudents.forEach(student => {
+        const fullName = student.lastName ? `${student.firstName} ${student.lastName}` : student.firstName;
+        csvContent += `${student.id},${student.firstName},${student.lastName || ''},${fullName},${currentSection}\n`;
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `students_${currentSection}_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      hideExportOptions();
+    }
+
+    function exportStudentsJSON() {
+      if (filteredStudents.length === 0) {
+        alert('No students to export.');
+        return;
+      }
+
+      const exportData = {
+        section: currentSection,
+        exportDate: new Date().toISOString(),
+        totalStudents: filteredStudents.length,
+        students: filteredStudents
+      };
+
+      const jsonStr = JSON.stringify(exportData, null, 2);
+      const blob = new Blob([jsonStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `students_${currentSection}_${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      hideExportOptions();
+    }
+
+    function exportStudentsPDF() {
+      alert('PDF export would require a PDF library. For now, please use CSV or JSON export.');
+      hideExportOptions();
+    }
+
+    function logout() {
+      localStorage.removeItem('teacherSession');
+      window.location.href = 'login.html';
+    }
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', loadPage);
+
+    // Close modal when clicking outside
+    window.onclick = function (event) {
+      const modal = document.getElementById('deleteModal');
+      if (event.target === modal) {
+        closeModal();
+      }
+    };
+
+    // Allow Enter key in search
+    document.getElementById('searchInput').addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        searchStudents();
+      }
+    });
+  </script>
+</body>
+
+</html>
